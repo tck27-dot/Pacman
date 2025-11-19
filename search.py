@@ -30,6 +30,7 @@ class SearchSpace(ABC):
         """
 
 
+
 def search_template(space, container, heuristic_fn=lambda state, space: 0):
     """General-purpose algorithmic template for search, e.g. DFS or BFS.
 

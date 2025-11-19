@@ -11,14 +11,51 @@ class EightPuzzleSearchSpace(SearchSpace):
         self.board = initial_board
 
     def get_start_state(self):
-        raise NotImplementedError("Implement me!")
+        return self.board
 
     def is_final_state(self, state):
-        raise NotImplementedError("Implement me!")
+        return torch.equal(tensor([[1, 2, 3], [4, 5, 6], [7, 8, 0]]), state)
 
+    def make_new_state(self, state, swap, direction, zeroLocation):
+        newState = state.clone()
+        if direction == 'vertical':
+            newState[swap[1]][zeroLocation[1]] = state[swap[0]][zeroLocation[1]].item()
+            newState[swap[0]][zeroLocation[1]] = state[swap[1]][zeroLocation[1]].item()
+
+        if direction == 'horizontal':
+            newState[zeroLocation[0]][swap[1]] = state[zeroLocation[0]][swap[0]].item()
+            newState[zeroLocation[0]][swap[0]] = state[zeroLocation[0]][swap[1]].item()
+            
+        return newState
+    
     def get_successors(self, state):
-        raise NotImplementedError("Implement me!")
+        successors = []
 
+        for i in range(3):
+            for j in range(3):
+                if state[i][j].item() == 0:
+                    row_zero = i
+                    col_zero = j
+        zeroLocation = (row_zero, col_zero)
+        
+        if row_zero == 0:
+            
+            successors.append((self.make_new_state(state,(0,1),'vertical',zeroLocation),"South",1))
+        elif row_zero == 1:
+            successors.append((self.make_new_state(state,(1,2),'vertical',zeroLocation),"South",1))
+            successors.append((self.make_new_state(state,(1,0),'vertical',zeroLocation),"North",1))
+        elif row_zero == 2:
+            successors.append((self.make_new_state(state,(2,1),'vertical',zeroLocation),"North",1))
+
+        if col_zero == 0:
+            successors.append((self.make_new_state(state,(0,1),'horizontal',zeroLocation),"East",1))
+        elif col_zero == 1:
+            successors.append((self.make_new_state(state,(1,2),'horizontal',zeroLocation), "East", 1))
+            successors.append((self.make_new_state(state,(1,0),'horizontal',zeroLocation), "West", 1))
+        elif col_zero == 2:
+            successors.append((self.make_new_state(state,(2,1),'horizontal',zeroLocation), "West", 1))
+        
+        return successors
 
 example_eight_puzzles = [
     tensor([[1, 2, 3], [4, 5, 6], [7, 8, 0]]),
