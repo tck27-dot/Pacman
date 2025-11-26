@@ -107,3 +107,5 @@ class PacmanFoodSearchSpace(SearchSpace):
             #             successors.append((new_state, directions[i], 1))  # cost is always 1
 
         return successors
+    
+    # dfs is not the sharpest tool in the shed. it does not guarantee optimality as long as it gets the job done.
