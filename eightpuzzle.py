@@ -30,7 +30,6 @@ class EightPuzzleSearchSpace(SearchSpace):
         return newState
     
     def get_successors(self, state):
-        # We will implement this function more efficiently (with torch functions) in Pacman.
         successors = []
 
         # Locate the zero in the current state.
@@ -93,7 +92,9 @@ example_eight_puzzles = [
 # At depth 13, it took 758195 nodes and 176 seconds.
 
 # Using depth first search at even depth of 1 can go for essentially forever without finding a solution 
-# because the search space contains cycles and DFS can get stuck going around in circles.
+# because DFS can get stuck going down paths that do not lead to a solution, even though the search template 
+# is designed to avoid cycles by tracking visited states.
+
 # DFS also uses an absolute shitton of memory as the computer adds more and more states to the stack, so it
 # eventually just crashes when the computer runs out of memory. 
 
