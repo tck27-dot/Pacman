@@ -110,4 +110,4 @@ class PacmanFoodSearchSpace(SearchSpace):
     
     # dfs is not the sharpest tool in the shed. it does not guarantee optimality as long as it gets the job done.
     # with the 270 maze, dfs is a little stupid but it does alright!
-    # however, in that situation, the bfs maze seems to get totally confused by the loop.
+    # however, in that same maze, the bfs algorithm seems to get totally confused by the loop.
