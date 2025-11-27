@@ -35,7 +35,7 @@ def food_heuristic(state, search_space):
     return farthest_distance
 
     # closest distance gets us 13869 nodes visited
-    # avg distnace gets us 11245 nodes visited
+    # avg distance gets us 11245 nodes visited
     # farthest distance gets us 9509 nodes visited
     # farthest distance + remaining food after that gets us 8389 nodes visited -- but not admissible
     
