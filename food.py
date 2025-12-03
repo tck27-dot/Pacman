@@ -1,6 +1,8 @@
 from search import SearchSpace
 import torch
 from torch import tensor 
+from collections import deque
+
 
 """ We're describing each maze with a Python dictionary, tracking the maze's:
  - height (int)
@@ -34,7 +36,9 @@ class PacmanFoodSearchSpace(SearchSpace):
         # - pacman position as a tuple
         # - a frozenset of food positions
 
-
+        self.distance_cache = {} # for getdistance
+        self.dist = {}
+        self.precompute_distances()
         """A previous attempt to do this with tensors --- saved for reference."""
         # self.maze = torch.zeros((self.width, self.height), dtype=torch.int32)
         # self.maze[tuple(zip(*dict_maze['walls']))] = 1  # set walls to 1
@@ -108,6 +112,51 @@ class PacmanFoodSearchSpace(SearchSpace):
 
         return successors
     
+    def get_distance(self, pos1, pos2):
+        #Function to get distance within maze, accounting for walls.
+        from collections import deque  
+        queue = deque([(pos1, 0)])  # (position, distance)
+        visited = set()
+
+        #add cache to speed up
+        if (pos1, pos2) in self.distance_cache:
+            return self.distance_cache[(pos1, pos2)]
+        if (pos2, pos1) in self.distance_cache:
+            return self.distance_cache[(pos2, pos1)]
+
+        while queue:
+            current_pos, dist = queue.popleft()
+            if current_pos == pos2:
+                self.distance_cache[(pos1, pos2)] = dist
+                return dist
+            if current_pos in visited:
+                continue
+            visited.add(current_pos)
+            temp_state = (current_pos, frozenset())  
+            for (next_state, direction, cost) in self.get_successors(temp_state):
+                if next_state[0] not in visited:   
+                    visited.add(next_state[0])
+                    queue.append((next_state[0], dist + 1))
+
+        return float("inf") # if no path found
+    
+    def precompute_distances(self):
+
+        # Precompute distances between all pairs of food positions and pacman start position
+        positions = list(self.food) + [self.pac_food_state[0]]
+        for i in range(len(positions)):
+            for j in range(i + 1, len(positions)):
+                pos1 = positions[i]
+                pos2 = positions[j]
+                distance = self.get_distance(pos1, pos2)  
+                self.dist[(pos1, pos2)] = distance
+                self.dist[(pos2, pos1)] = distance
+    
+    
+        
+        
+        
+         
     # dfs is not the sharpest tool in the shed. it does not guarantee optimality as long as it gets the job done.
     # with the 270 maze, dfs is a little stupid but it does alright!
     # however, in that same maze, the bfs algorithm seems to get totally confused by the loop.

@@ -10,6 +10,19 @@ def eight_puzzle_heuristic(state, search_space):
     # With a solution depth of 10, where BFS went through 102835 search nodes, A* went through 53.
     # At depth 13, BFS went through 758195 nodes. A* went through 1010. 
 
+def helperdist(search_space, a, b):
+    # Try cache first
+    if (a, b) in search_space.dist:
+        return search_space.dist[(a, b)]
+    if (b, a) in search_space.dist:
+        return search_space.dist[(b, a)]
+    
+    # Compute and store for future use
+    d = search_space.get_distance(a, b)
+    search_space.dist[(a, b)] = d
+    search_space.dist[(b, a)] = d
+    return d
+
 def food_heuristic(state, search_space):
     """potential heuristics:
     1. num remaining food pellets
@@ -39,7 +52,51 @@ def food_heuristic(state, search_space):
     # farthest distance gets us 9509 nodes visited
     # farthest distance + remaining food after that gets us 8389 nodes visited -- but not admissible
     
+    #implementation of closest distance plus MST over remaining food
+   
+   
+def food_heuristic_mst(state, search_space):
+    pacman_pos = state[0]
+    food_positions = state[1]
+    food_list = list(food_positions)
+    
+    if len(food_positions) == 0:
+        return 0
+    
+    if len(food_positions) == 1:
+        return helperdist(search_space, pacman_pos, food_list[0])
+    
+    
+    all_positions = [pacman_pos] + food_list
+    return compute_mst(search_space, all_positions)
 
-
-
-    return 0  # replace with a better heuristic!
+def compute_mst(search_space, positions):
+    if len(positions) <= 1:
+        return 0
+    
+    tree_cost = 0
+    visited = set()
+    visited.add(positions[0])
+    unvisited = set()
+    for pos in positions[1:]:
+        unvisited.add(pos)
+    
+    while unvisited:
+        best = float('inf')
+        best_destination = None
+        
+        for v in visited:
+            for u in unvisited:
+                distance = helperdist(search_space, v, u)
+                if distance < best:
+                    best = distance
+                    best_destination = u
+        
+        if best_destination is None:
+            break
+        
+        tree_cost += best
+        visited.add(best_destination)
+        unvisited.remove(best_destination)
+    
+    return tree_cost
