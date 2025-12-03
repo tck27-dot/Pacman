@@ -36,6 +36,7 @@ def food_heuristic(state, search_space):
     # return num_food
     # 12385 nodes visited w/tricky maze,  food heuristic = num remaining food pellets
 
+    
     pacman_pos = state[0]
     food_positions = state[1]
     if len(food_positions) == 0:
@@ -55,6 +56,7 @@ def food_heuristic(state, search_space):
     #implementation of closest distance plus MST over remaining food
    
    
+   # lots of nodes with this one...
 def food_heuristic_mst(state, search_space):
     pacman_pos = state[0]
     food_positions = state[1]
@@ -66,7 +68,7 @@ def food_heuristic_mst(state, search_space):
     if len(food_positions) == 1:
         return helperdist(search_space, pacman_pos, food_list[0])
     
-    
+    #need to compute MST over food positions plus pacman position
     all_positions = [pacman_pos] + food_list
     return compute_mst(search_space, all_positions)
 
@@ -84,7 +86,7 @@ def compute_mst(search_space, positions):
     while unvisited:
         best = float('inf')
         best_destination = None
-        
+        #goes through all nodes and finds best edge to add next to MST
         for v in visited:
             for u in unvisited:
                 distance = helperdist(search_space, v, u)
@@ -92,7 +94,7 @@ def compute_mst(search_space, positions):
                     best = distance
                     best_destination = u
         
-        if best_destination is None:
+        if best_destination is None: #to avoid errors
             break
         
         tree_cost += best
